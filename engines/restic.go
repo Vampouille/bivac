@@ -80,7 +80,7 @@ func (r *ResticEngine) Backup() (err error) {
 		if err != nil {
 			err = fmt.Errorf("failed to verify backup: %v", err)
 			r.sendBackupStatus(1, v.Name)
-			return err
+			return
 		}
 	}
 
@@ -211,6 +211,17 @@ func (r *ResticEngine) forget() (err error) {
 	v := r.Volume
 
 	snapshots, err := r.snapshots()
+
+	// Send last backup date to pushgateway
+	metric := r.Volume.MetricsHandler.NewMetric("bivac_lastBackup", "counter")
+	metric.UpdateEvent(
+		&metrics.Event{
+			Labels: map[string]string{
+				"volume": v.Name,
+			},
+			Value: strconv.FormatInt(snapshots[len(snapshots)-1].Time.Unix(), 10),
+		},
+	)
 
 	duration, err := util.GetDurationFromInterval(v.Config.RemoveOlderThan)
 	if err != nil {
