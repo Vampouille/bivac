@@ -95,7 +95,7 @@ func (o *DockerOrchestrator) GetVolumes() (volumes []*volume.Volume, err error) 
 }
 
 // LaunchContainer starts a container using the Docker orchestrator
-func (o *DockerOrchestrator) LaunchContainer(image string, env map[string]string, cmd []string, volumes []*volume.Volume) (state int, stdout string, err error) {
+func (o *DockerOrchestrator) LaunchContainer(image string, env map[string]string, cmd []string, volumes []*volume.Volume) (state int, stdout string, stderr string, err error) {
 	err = pullImage(o.Client, image)
 	if err != nil {
 		err = fmt.Errorf("failed to pull image: %v", err)
@@ -136,7 +136,7 @@ func (o *DockerOrchestrator) LaunchContainer(image string, env map[string]string
 			AttachStdin:  true,
 			AttachStdout: true,
 			AttachStderr: true,
-			Tty:          true,
+			Tty:          false, // Otherwise stderr and stdout are mixed
 		},
 		&container.HostConfig{
 			Mounts: mounts,
@@ -170,26 +170,44 @@ func (o *DockerOrchestrator) LaunchContainer(image string, env map[string]string
 		}
 	}
 
-	body, err := o.Client.ContainerLogs(context.Background(), container.ID, types.ContainerLogsOptions{
+	bodyStdOut, err := o.Client.ContainerLogs(context.Background(), container.ID, types.ContainerLogsOptions{
 		ShowStdout: true,
+		ShowStderr: false,
+		Details:    true,
+		Follow:     true,
+	})
+	if err != nil {
+		err = fmt.Errorf("failed to retrieve stdout logs: %v", err)
+		return
+	}
+	bodyStdErr, err := o.Client.ContainerLogs(context.Background(), container.ID, types.ContainerLogsOptions{
+		ShowStdout: false,
 		ShowStderr: true,
 		Details:    true,
 		Follow:     true,
 	})
 	if err != nil {
-		err = fmt.Errorf("failed to retrieve logs: %v", err)
+		err = fmt.Errorf("failed to retrieve stderr logs: %v", err)
 		return
 	}
 
-	defer body.Close()
-	content, err := ioutil.ReadAll(body)
+	defer bodyStdOut.Close()
+	defer bodyStdErr.Close()
+	contentStdOut, err := ioutil.ReadAll(bodyStdOut)
 	if err != nil {
-		err = fmt.Errorf("failed to read logs from response: %v", err)
+		err = fmt.Errorf("failed to read stdout logs from response: %v", err)
+		return
+	}
+	contentStdErr, err := ioutil.ReadAll(bodyStdErr)
+	if err != nil {
+		err = fmt.Errorf("failed to read stderr logs from response: %v", err)
 		return
 	}
 
-	stdout = string(content)
-	log.Debug(stdout)
+	stdout = string(contentStdOut)
+	log.Debugf("STDOUT : %s", stdout)
+	stderr = string(contentStdErr)
+	log.Debugf("STDERR : %s", stderr)
 
 	return
 }
