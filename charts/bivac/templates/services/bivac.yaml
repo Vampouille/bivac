@@ -10,9 +10,9 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - name: http
-      port: 80
-      targetPort: container
+    - name: api
+      port: 8182
+      targetPort: api
   selector:
     app: {{ template "bivac.name" . }}-bivac
     release: {{ .Release.Name }}
