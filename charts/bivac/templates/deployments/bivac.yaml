@@ -37,3 +37,10 @@ spec:
             tcpSocket:
               port: api
 {{ toYaml .Values.probes.readiness | indent 12 }}
+          volumeMounts:
+            - name: bivac-providers-conf
+              mountPath: /etc/bivac
+      volumes:
+        - name: bivac-providers-conf
+          configMap:
+            name: {{ template "bivac.fullname" . }}-bivac
