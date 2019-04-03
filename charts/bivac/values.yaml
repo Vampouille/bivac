@@ -3,24 +3,23 @@ image:
   tag: 2.1-dev
   pullPolicy: Always
 
-bivac:
-  env:
-    - name: BIVAC_ORCHESTRATOR
-      value: kubernetes
-    - name: KUBERNETES_ALL_NAMESPACES
-      value: 'true'
-    - name: AWS_ACCESS_KEY_ID
-      value: 'XXXXXXXXXXXXXXXXXXXX'
-    - name: RESTIC_FORGET_ARGS
-      value: 'XXXXXXXXXXXXXX'
-    - name: BIVAC_TARGET_URL
-      value: 'XXXXXXXXXXXXXXXXXXX'
-    - name: AWS_SECRET_ACCESS_KEY
-      value: 'XXXXXXXXXXXXXXXXXXX'
-    - name: RESTIC_PASSWORD
-      value: 'XXXXXXXXXXX'
-    - name: BIVAC_SERVER_PSK
-      value: 'XXXXXXXXXXXXXXXXXXX'
+envVars:
+  - name: BIVAC_ORCHESTRATOR
+    value: kubernetes
+  - name: KUBERNETES_ALL_NAMESPACES
+    value: 'true'
+  - name: AWS_ACCESS_KEY_ID
+    value: 'XXXXXXXXXXXXXXXXXXXX'
+  - name: RESTIC_FORGET_ARGS
+    value: 'XXXXXXXXXXXXXX'
+  - name: BIVAC_TARGET_URL
+    value: 'XXXXXXXXXXXXXXXXXXX'
+  - name: AWS_SECRET_ACCESS_KEY
+    value: 'XXXXXXXXXXXXXXXXXXX'
+  - name: RESTIC_PASSWORD
+    value: 'XXXXXXXXXXX'
+  - name: BIVAC_SERVER_PSK
+    value: 'XXXXXXXXXXXXXXXXXXX'
 
 service:
   type: NodePort

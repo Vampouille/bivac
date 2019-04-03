@@ -14,6 +14,7 @@ spec:
         app: {{ template "bivac.name" . }}-bivac
         release: {{ .Release.Name }}
     spec:
+      serviceAccountName: {{ template "bivac.fullname" . }}-bivac
       containers:
         - name: {{ template "bivac.fullname" . }}-bivac
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -25,7 +26,7 @@ spec:
             - name: api
               containerPort: 8182
           env:
-{{ range .Values.bivac.env }}
+{{ range .Values.envVars }}
             - name: {{ .name }}
               value: {{ .value | quote }}
 {{- end }}
