@@ -1,9 +1,9 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: {{ template "bivac.fullname" . }}-bivac
+  name: {{ template "bivac.fullname" . }}
   labels:
-    app: {{ template "bivac.name" . }}-bivac
+    app: {{ template "bivac.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -11,12 +11,12 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ template "bivac.name" . }}-bivac
+        app: {{ template "bivac.name" . }}
         release: {{ .Release.Name }}
     spec:
-      serviceAccountName: {{ template "bivac.fullname" . }}-bivac
+      serviceAccountName: {{ template "bivac.fullname" . }}
       containers:
-        - name: {{ template "bivac.fullname" . }}-bivac
+        - name: {{ template "bivac.fullname" . }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
@@ -44,4 +44,4 @@ spec:
       volumes:
         - name: bivac-providers-conf
           configMap:
-            name: {{ template "bivac.fullname" . }}-bivac
+            name: {{ template "bivac.fullname" . }}
