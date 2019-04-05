@@ -30,6 +30,8 @@ spec:
             - name: {{ .name }}
               value: {{ .value | quote }}
 {{- end }}
+            - name: BIVAC_LOG_SERVER
+              value: "http://{{ template "bivac.fullname" . }}.{{ .Release.Namespace }}.svc:8182"
           livenessProbe:
             tcpSocket:
               port: api
