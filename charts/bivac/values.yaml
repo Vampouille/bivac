@@ -21,25 +21,6 @@ envVars:
   - name: BIVAC_SERVER_PSK
     value: 'XXXXXXXXXXXXXXXXXXX'
 
-service:
-  type: NodePort
-  externalTrafficPolicy: Cluster
-  nodePorts:
-    bivac:
-      http: ''
-
-ingress:
-  enabled: false
-  tls: false
-  hosts:
-    bivac:
-      - name: ''
-        path: /
-
-issuer:
-  name: letsencrypt-staging
-  kind: ClusterIssuer
-
 probes:
   liveness:
     initialDelaySeconds: 120
